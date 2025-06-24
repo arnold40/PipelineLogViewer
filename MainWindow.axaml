@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="PipelineLogViewer.MainWindow"
+        Title="Pipeline Log Viewer"  Width="800" Height="600"
+        FontFamily="Consolas, Monaco, monospace"
+        FontSize="12">
+    <StackPanel Margin="10">
+        <TextBlock Text="Paste log data below:" Margin="0,0,0,5"/>
+        <TextBox Name="InputBox" AcceptsReturn="True" Height="200"/>
+        <Button Name="ParseButton" Content="Parse Logs" Margin="0,5"/>
+        <TextBlock Text="Output:" Margin="0,10,0,5"/>
+        <TextBlock Name="OutputBlock" TextWrapping="Wrap"/>
+    </StackPanel>
+</Window>
