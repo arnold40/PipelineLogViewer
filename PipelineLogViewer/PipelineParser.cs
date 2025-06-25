@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using PipelineLogViewer.Models;
 
 namespace PipelineLogViewer;
 
@@ -10,16 +11,32 @@ public class PipelineParser
 {
     private static readonly Regex LogLineRegex = new(@"^(\S+)\s+(\S+)\s+(\d+)\s+\[([^\]]*)\]\s+(\S+)", RegexOptions.Compiled);
 
-    public string ParseLogs(string input)
+    // Updated method that returns structured data
+    public static List<Pipeline> ParseLogsToStructuredData(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
-            return string.Empty;
+            return new List<Pipeline>();
 
-        var pipelines = ExtractPipelinesFromInput(input);
-        return FormatPipelinesOutput(pipelines);
+        var messagesGrouped = ExtractPipelinesFromInput(input);
+        var pipelines = new List<Pipeline>();
+
+        foreach (var (pipelineId, messages) in messagesGrouped)
+        {
+            var orderedMessages = ReconstructMessageChain(messages);
+            
+            var pipeline = new Pipeline
+            {
+                Id = pipelineId,
+                Messages = orderedMessages
+            };
+            
+            pipelines.Add(pipeline);
+        }
+
+        return pipelines;
     }
 
-    private Dictionary<string, Dictionary<string, PipelineMessage>> ExtractPipelinesFromInput(string input)
+    private static Dictionary<string, Dictionary<string, PipelineMessage>> ExtractPipelinesFromInput(string input)
     {
         var lines = input.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         var pipelines = new Dictionary<string, Dictionary<string, PipelineMessage>>();
@@ -38,7 +55,7 @@ public class PipelineParser
         return pipelines;
     }
 
-    private PipelineMessage? ParseLogLine(string line)
+    private static PipelineMessage? ParseLogLine(string line)
     {
         var match = LogLineRegex.Match(line);
         if (!match.Success) return null;
@@ -76,28 +93,7 @@ public class PipelineParser
         }
     }
 
-    private string FormatPipelinesOutput(Dictionary<string, Dictionary<string, PipelineMessage>> pipelines)
-    {
-        var output = new StringBuilder();
-        
-        foreach (var (pipelineId, messages) in pipelines)
-        {
-            output.AppendLine($"Pipeline {pipelineId}");
-            
-            var orderedMessages = ReconstructMessageChain(messages);
-            
-            foreach (var message in orderedMessages)
-            {
-                output.AppendLine($"  {message.Id}| {message.Body}");
-            }
-
-            output.AppendLine();
-        }
-
-        return output.ToString();
-    }
-
-    private List<PipelineMessage> ReconstructMessageChain(Dictionary<string, PipelineMessage> messages)
+    private static List<PipelineMessage> ReconstructMessageChain(Dictionary<string, PipelineMessage> messages)
     {
         // Find the tail message (not referenced by any other message)
         var tailMessage = FindTailMessage(messages);
@@ -112,7 +108,7 @@ public class PipelineParser
         return orderedMessages;
     }
 
-    private PipelineMessage? FindTailMessage(Dictionary<string, PipelineMessage> messages)
+    private static PipelineMessage? FindTailMessage(Dictionary<string, PipelineMessage> messages)
     {
         var referencedIds = new HashSet<string>();
         
@@ -126,7 +122,7 @@ public class PipelineParser
         return messages.Values.FirstOrDefault(msg => !referencedIds.Contains(msg.Id));
     }
 
-    private List<PipelineMessage> BuildMessageChain(Dictionary<string, PipelineMessage> messages, PipelineMessage startMessage)
+    private static List<PipelineMessage> BuildMessageChain(Dictionary<string, PipelineMessage> messages, PipelineMessage startMessage)
     {
         var orderedMessages = new List<PipelineMessage>();
         var visited = new HashSet<string>(); // Prevent infinite loops in circular references
@@ -144,12 +140,3 @@ public class PipelineParser
         return orderedMessages;
     }
 }
-
-// Data class to represent a pipeline message
-public record PipelineMessage(
-    string PipelineId,
-    string Id,
-    string Body,
-    string NextId,
-    int Encoding
-);
