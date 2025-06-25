@@ -14,14 +14,14 @@ public partial class MainWindow : Window
     {
         _parser = new PipelineParser();
         InitializeComponent();
-        _inputBox = this.FindControl<TextBox>("InputBox");
-        _outputBox = this.FindControl<TextBox>("OutputBox");
-        _parseButton = this.FindControl<Button>("ParseButton");
+        _inputBox = this.FindControl<TextBox>("InputBox")!;
+        _outputBox = this.FindControl<TextBox>("OutputBox")!;
+        _parseButton = this.FindControl<Button>("ParseButton")!;
 
         _parseButton.Click += (_, _) =>
         {
-            var input = _inputBox.Text;
-            var output =  _parser.ParseLogs(input);
+            var input = _inputBox?.Text ?? string.Empty;
+            var output = _parser.ParseLogs(input);
             _outputBox.Text = output;
         };
     }
