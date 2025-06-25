@@ -55,15 +55,16 @@ Pipeline 1
 ### Building and Running
 
 1. **Clone or download the project**
-2. **Build the solution:**
+2. **Switch to mvvm branch**
+3. **Build the solution:**
    ```bash
    dotnet build
    ```
-3. **Run the application:**
+4. **Run the application:**
    ```bash
    dotnet run --project PipelineLogViewer
    ```
-4. **Run tests:**
+5. **Run tests:**
    ```bash
    dotnet test
    ```
