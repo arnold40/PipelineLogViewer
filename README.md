@@ -27,21 +27,22 @@ Where:
 
 ### Example Input
 ```
-1 0 0 [Start processing] 1
-1 2 0 [Process complete] -1
-1 1 0 [Processing data] 2
-2 a 1 [4F4B] -1
+2 3 1 [4F4B] -1
+1 0 0 [some text] 1
+1 1 0 [another text] 2
+2 99 1 [4F4B] 3
+1 2 1 [626F6479] -1
 ```
 
 ### Example Output
 ```
-Pipeline 1
-  2| Process complete
-  1| Processing data
-  0| Start processing
-
 Pipeline 2
-  a| OK
+  3| OK
+  99| OK
+Pipeline 1
+  2| body
+  1| another text
+  0| some text
 ```
 
 ## Getting Started
