@@ -90,8 +90,6 @@ public class PipelineParser
             {
                 output.AppendLine($"  {message.Id}| {message.Body}");
             }
-
-            output.AppendLine();
         }
 
         return output.ToString();
@@ -112,7 +110,7 @@ public class PipelineParser
         return orderedMessages;
     }
 
-    private PipelineMessage? FindTailMessage(Dictionary<string, PipelineMessage> messages)
+    private static PipelineMessage? FindTailMessage(Dictionary<string, PipelineMessage> messages)
     {
         var referencedIds = new HashSet<string>();
         
@@ -126,7 +124,7 @@ public class PipelineParser
         return messages.Values.FirstOrDefault(msg => !referencedIds.Contains(msg.Id));
     }
 
-    private List<PipelineMessage> BuildMessageChain(Dictionary<string, PipelineMessage> messages, PipelineMessage startMessage)
+    private static List<PipelineMessage> BuildMessageChain(Dictionary<string, PipelineMessage> messages, PipelineMessage startMessage)
     {
         var orderedMessages = new List<PipelineMessage>();
         var visited = new HashSet<string>(); // Prevent infinite loops in circular references
